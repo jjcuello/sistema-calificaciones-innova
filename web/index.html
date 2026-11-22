@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#12233f">
+    <title>Instituto Innova | Gestión académica</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark" aria-hidden="true">i</div>
+            <div>
+                <strong>instituto innova</strong>
+                <span>Gestión académica</span>
+            </div>
+        </div>
+        <p class="nav-label">ESPACIO DE TRABAJO</p>
+        <nav class="navigation" aria-label="Navegación principal">
+            <button type="button" class="nav-link active" data-view="inicio" aria-current="page">
+                <span class="nav-number">01</span> Resumen
+            </button>
+            <button type="button" class="nav-link" data-view="cursos">
+                <span class="nav-number">02</span> Cursos y matrículas
+            </button>
+            <button type="button" class="nav-link" data-view="calificaciones">
+                <span class="nav-number">03</span> Registrar notas
+            </button>
+            <button type="button" class="nav-link" data-view="consulta">
+                <span class="nav-number">04</span> Consulta del estudiante
+            </button>
+            <button type="button" class="nav-link" data-view="reportes">
+                <span class="nav-number">05</span> Reportes
+            </button>
+            <button type="button" class="nav-link" data-view="administracion">
+                <span class="nav-number">06</span> Administración
+            </button>
+        </nav>
+        <div class="sidebar-footer">
+            <span class="sidebar-dot" aria-hidden="true"></span>
+            Proyecto académico · Caso 7
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">INSTITUTO INNOVA / GESTIÓN ACADÉMICA</p>
+                <h1 id="page-title">Resumen general</h1>
+            </div>
+            <div class="topbar-actions">
+                <button type="button" id="refresh-button" class="button button-quiet">Actualizar</button>
+                <a class="source-link" href="https://github.com/jjcuello/sistema-calificaciones-innova"
+                   target="_blank" rel="noopener noreferrer">Código en GitHub <span aria-hidden="true">↗</span></a>
+            </div>
+        </header>
+
+        <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+        <div class="demo-notice">
+            <span class="notice-icon" aria-hidden="true">i</span>
+            <p><strong>Demostración pública con roles simulados.</strong> Usa solo datos ficticios.
+                Los cambios se pierden al reiniciar; el servicio gratuito de Render puede detenerse tras 15 minutos de inactividad.</p>
+        </div>
+
+        <section id="vista-inicio" class="page" aria-labelledby="inicio-title">
+            <div class="hero">
+                <div>
+                    <p class="eyebrow hero-eyebrow">EL PROGRESO, EN PERSPECTIVA</p>
+                    <h2 id="inicio-title">Una mirada clara al<br>rendimiento académico.</h2>
+                    <p>Consulta cursos, calificaciones y alertas en un solo lugar.</p>
+                </div>
+                <div class="hero-badge"><span aria-hidden="true">✦</span> Enfoque orientado a objetos</div>
+            </div>
+            <div class="metrics">
+                <article class="metric-card">
+                    <span class="metric-label">ESTUDIANTES</span>
+                    <strong id="metric-students">—</strong>
+                    <span class="metric-caption">registrados</span>
+                </article>
+                <article class="metric-card">
+                    <span class="metric-label">CURSOS</span>
+                    <strong id="metric-courses">—</strong>
+                    <span class="metric-caption">secciones creadas</span>
+                </article>
+                <article class="metric-card">
+                    <span class="metric-label">PROMEDIO GENERAL</span>
+                    <strong id="metric-average">—</strong>
+                    <span class="metric-caption">de resultados completos</span>
+                </article>
+                <article class="metric-card metric-alert">
+                    <span class="metric-label">ALERTAS</span>
+                    <strong id="metric-alerts">—</strong>
+                    <span class="metric-caption">promedios por debajo de 11</span>
+                </article>
+            </div>
+            <div class="dashboard-grid">
+                <article class="card">
+                    <div class="card-heading">
+                        <div>
+                            <p class="eyebrow">ACOMPAÑAMIENTO</p>
+                            <h3>Alertas de rendimiento</h3>
+                        </div>
+                        <span class="pill pill-red">Umbral &lt; 11</span>
+                    </div>
+                    <p class="muted">Se muestran las matrículas con promedio final en riesgo.</p>
+                    <div id="alert-list" class="alert-list"></div>
+                </article>
+                <article class="card">
+                    <div class="card-heading">
+                        <div>
+                            <p class="eyebrow">REGLAS DE EVALUACIÓN</p>
+                            <h3>Cómo se calcula</h3>
+                        </div>
+                    </div>
+                    <div class="weight-row"><span>Parciales</span><strong>20 %</strong></div>
+                    <div class="weight-row"><span>Prácticas</span><strong>30 %</strong></div>
+                    <div class="weight-row"><span>Examen final</span><strong>50 %</strong></div>
+                    <p class="rule-note">Los talleres se evalúan 100 % con prácticas. El promedio permanece pendiente si falta una categoría requerida.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="vista-cursos" class="page" aria-labelledby="cursos-title" hidden>
+            <div class="section-intro">
+                <div><p class="eyebrow">ORGANIZACIÓN ACADÉMICA</p><h2 id="cursos-title">Cursos y matrículas</h2></div>
+                <p>Cada curso representa una sección y admite hasta 40 estudiantes.</p>
+            </div>
+            <article class="card">
+                <div class="card-heading"><h3>Secciones registradas</h3><span class="pill pill-blue">Capacidad: 40</span></div>
+                <div class="table-wrap">
+                    <table>
+                        <caption class="sr-only">Cursos y sus datos principales</caption>
+                        <thead><tr><th>Asignatura</th><th>Modalidad</th><th>Profesor</th><th>Semestre / horario</th><th>Cupo</th></tr></thead>
+                        <tbody id="courses-body"></tbody>
+                    </table>
+                </div>
+            </article>
+            <div class="form-grid">
+                <article class="card">
+                    <p class="eyebrow">ADMINISTRACIÓN</p><h3>Crear una sección</h3>
+                    <form id="course-form" class="form-layout">
+                        <label>Asignatura<select name="asignaturaId" id="course-subject" required></select></label>
+                        <label>Profesor<select name="profesorId" id="course-teacher" required></select></label>
+                        <label>Modalidad<select name="tipo" required>
+                            <option value="regular">Regular</option>
+                            <option value="taller">Taller</option>
+                            <option value="teorico_practico">Teórico-práctico</option>
+                        </select></label>
+                        <label>Semestre<input name="semestre" placeholder="Ej. 2026-2" maxlength="120" required></label>
+                        <label>Horario<input name="horario" placeholder="Ej. Lunes 08:00" maxlength="120" required></label>
+                        <label>Aula<input name="aula" placeholder="Ej. Aula 101" maxlength="120" required></label>
+                        <button class="button button-primary form-submit" type="submit">Crear curso</button>
+                    </form>
+                </article>
+                <article class="card">
+                    <p class="eyebrow">ADMINISTRACIÓN</p><h3>Matricular estudiante</h3>
+                    <p class="muted">Una persona puede inscribirse en varios cursos, pero no dos veces en la misma sección.</p>
+                    <form id="enroll-form" class="form-layout single">
+                        <label>Curso<select name="cursoId" id="enroll-course" required></select></label>
+                        <label>Estudiante<select name="estudianteId" id="enroll-student" required></select></label>
+                        <button class="button button-primary form-submit" type="submit">Registrar matrícula</button>
+                    </form>
+                </article>
+            </div>
+        </section>
+
+        <section id="vista-calificaciones" class="page" aria-labelledby="calificaciones-title" hidden>
+            <div class="section-intro">
+                <div><p class="eyebrow">VISTA DE PROFESOR · SIMULADA</p><h2 id="calificaciones-title">Registrar calificaciones</h2></div>
+                <p>Selecciona un profesor y una de sus secciones para añadir evaluaciones.</p>
+            </div>
+            <div class="form-grid grades-grid">
+                <article class="card">
+                    <h3>Nueva evaluación</h3>
+                    <form id="grade-form" class="form-layout single">
+                        <label>Profesor<select name="profesorId" id="grade-teacher" required></select></label>
+                        <label>Curso asignado<select name="cursoId" id="grade-course" required></select></label>
+                        <label>Estudiante matriculado<select name="estudianteId" id="grade-student" required></select></label>
+                        <label>Categoría<select name="categoria" id="grade-category" required></select></label>
+                        <label>Nota sobre 20<input name="nota" type="text" inputmode="decimal"
+                                                   pattern="[0-9]+([.,][0-9]{1,6})?" maxlength="9"
+                                                   title="Introduce una nota con hasta seis decimales."
+                                                   placeholder="Ej. 14,5" required></label>
+                        <p class="field-help">Hasta seis decimales y 100 evaluaciones por categoría. Las notas de una misma categoría se promedian.</p>
+                        <button class="button button-primary form-submit" type="submit">Registrar nota</button>
+                    </form>
+                </article>
+                <article class="card">
+                    <p class="eyebrow">SECCIÓN SELECCIONADA</p><h3>Registro de calificaciones</h3>
+                    <p class="muted">El promedio final y la alerta se actualizan automáticamente.</p>
+                    <div id="grade-roster"></div>
+                </article>
+            </div>
+        </section>
+
+        <section id="vista-consulta" class="page" aria-labelledby="consulta-title" hidden>
+            <div class="section-intro">
+                <div><p class="eyebrow">VISTA DE ESTUDIANTE · SIMULADA</p><h2 id="consulta-title">Consulta de calificaciones</h2></div>
+                <p>Selecciona un estudiante ficticio para consultar sus cursos y notas.</p>
+            </div>
+            <article class="card">
+                <label class="filter-label">Estudiante<select id="student-view"></select></label>
+                <div id="student-results"></div>
+            </article>
+        </section>
+
+        <section id="vista-reportes" class="page" aria-labelledby="reportes-title" hidden>
+            <div class="section-intro">
+                <div><p class="eyebrow">ANÁLISIS ACADÉMICO</p><h2 id="reportes-title">Reportes consolidados</h2></div>
+                <p>Filtra los resultados por semestre, programa o ambos.</p>
+            </div>
+            <article class="card">
+                <form id="report-form" class="report-filters">
+                    <label>Semestre<select id="report-semester"></select></label>
+                    <label>Programa académico<select id="report-program"></select></label>
+                    <button class="button button-primary" type="submit">Aplicar filtros</button>
+                </form>
+                <div class="report-summary">
+                    <div><span>Matrículas</span><strong id="report-enrollments">—</strong></div>
+                    <div><span>Estudiantes</span><strong id="report-students">—</strong></div>
+                    <div><span>Promedio</span><strong id="report-average">—</strong></div>
+                    <div><span>En riesgo</span><strong id="report-alerts">—</strong></div>
+                    <div><span>Pendientes</span><strong id="report-pending">—</strong></div>
+                </div>
+                <p class="field-help">El promedio consolidado es la media simple de los promedios finales disponibles; excluye los pendientes.</p>
+            </article>
+            <article class="card">
+                <h3>Rendimiento por curso</h3>
+                <div class="table-wrap">
+                    <table>
+                        <caption class="sr-only">Reporte de rendimiento por curso</caption>
+                        <thead><tr><th>Curso</th><th>Semestre</th><th>Matrículas</th><th>Completos</th><th>Promedio</th><th>Alertas</th></tr></thead>
+                        <tbody id="report-courses"></tbody>
+                    </table>
+                </div>
+            </article>
+            <article class="card">
+                <h3>Rendimiento por estudiante</h3>
+                <div class="table-wrap">
+                    <table>
+                        <caption class="sr-only">Reporte de rendimiento por estudiante</caption>
+                        <thead><tr><th>Estudiante</th><th>Programa</th><th>Cursos</th><th>Completos</th><th>Promedio</th><th>Alertas</th></tr></thead>
+                        <tbody id="report-students-body"></tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
+
+        <section id="vista-administracion" class="page" aria-labelledby="administracion-title" hidden>
+            <div class="section-intro">
+                <div><p class="eyebrow">VISTA DE ADMINISTRACIÓN · SIMULADA</p><h2 id="administracion-title">Registrar datos</h2></div>
+                <p>Agrega datos ficticios para crear cursos y probar la plataforma.</p>
+            </div>
+            <div class="admin-grid">
+                <article class="card">
+                    <span class="form-icon">01</span><h3>Estudiante</h3>
+                    <form id="student-form" class="form-layout single">
+                        <label>Nombre<input name="nombre" maxlength="120" required></label>
+                        <label>Programa académico<input name="programa" maxlength="120" required></label>
+                        <button class="button button-primary" type="submit">Registrar estudiante</button>
+                    </form>
+                </article>
+                <article class="card">
+                    <span class="form-icon">02</span><h3>Profesor</h3>
+                    <form id="teacher-form" class="form-layout single">
+                        <label>Nombre<input name="nombre" maxlength="120" required></label>
+                        <label>Especialidad<input name="especialidad" maxlength="120" required></label>
+                        <button class="button button-primary" type="submit">Registrar profesor</button>
+                    </form>
+                </article>
+                <article class="card">
+                    <span class="form-icon">03</span><h3>Asignatura</h3>
+                    <form id="subject-form" class="form-layout single">
+                        <label>Nombre<input name="nombre" maxlength="120" required></label>
+                        <button class="button button-primary" type="submit">Registrar asignatura</button>
+                    </form>
+                </article>
+            </div>
+        </section>
+        <footer class="footer">Instituto Innova · Proyecto académico de demostración · C++ y Crow</footer>
+    </main>
+</div>
+</body>
+</html>

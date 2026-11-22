@@ -12,7 +12,12 @@
 | Caso | 7 — Sistema de gestión de calificaciones |
 | Objetivo | Analizar y exponer el enfoque orientado a objetos desde un caso práctico. |
 
-> **Estado del proyecto:** documentación y propuesta de diseño. La aplicación en C++ y la interfaz web todavía no están implementadas. Las clases, operaciones y tecnologías descritas son propuestas, no funcionalidades disponibles.
+> **Estado del proyecto:** demostración funcional en C++ con interfaz web. Utiliza datos ficticios en memoria y roles simulados; no está diseñada para almacenar información académica real.
+
+## Enlaces de entrega
+
+- **Código y repositorio público:** [github.com/jjcuello/sistema-calificaciones-innova](https://github.com/jjcuello/sistema-calificaciones-innova).
+- **Aplicación en Render:** pendiente de despliegue.
 
 ## 1. Contexto del caso
 
@@ -43,27 +48,39 @@ Para este diseño, cada objeto de curso representa una **sección ofertada de un
 
 | Clase | Atributos relevantes | Métodos propuestos | ¿Por qué es una clase y no un simple dato? |
 | --- | --- | --- | --- |
-| `Estudiante` | `id`, `nombre`, `programaAcademico` | `consultarNotas()`, `consultarCursos()` | Tiene identidad, participa en matrículas y permite consultar información académica asociada; no se limita a almacenar un nombre. |
-| `Profesor` | `id`, `nombre`, `especialidad` | `registrarNota()`, `consultarCursosAsignados()` | Representa a una persona con responsabilidades y operaciones propias, sujetas a la autorización sobre sus cursos. |
-| `Curso` | `id`, `asignatura`, `profesor`, `horario`, `aula`, `semestre`, `matriculas` | `matricularEstudiante()`, `registrarNota()`, `calcularPromedio()` | Agrupa información y reglas: controla el cupo, las matrículas y la evaluación de sus estudiantes. |
+| `Estudiante` | `id`, `nombre`, `programa` | `consultarNotas()`, `consultarPromedio()` | Tiene identidad, participa en matrículas y permite consultar información académica asociada; no se limita a almacenar un nombre. |
+| `Profesor` | `id`, `nombre`, `especialidad` | `registrarNota()`, `estaAsignado()` | Representa a una persona con responsabilidades y operaciones propias sobre sus cursos. |
+| `Curso` | `id`, `asignatura`, `profesor`, `horario`, `aula`, `semestre`, `matriculas` | `matricular()`, `registrarNota()`, `calcularPromedio()` | Agrupa información y reglas: controla el cupo, las matrículas y la evaluación de sus estudiantes. |
 
 **Ejemplos de objetos con datos ficticios:**
 
-- Un estudiante con identificador `EST-001`, llamado Ana Pérez.
-- Un profesor con identificador `PROF-001`, llamado Luis Rojas.
-- Un curso regular `CUR-001`, correspondiente a Programación I, sección A, semestre `2026-2`.
+- Un estudiante con identificador `1`, llamado Ana Pérez.
+- Una profesora con identificador `1`, llamada María Torres.
+- Un curso regular con identificador `1`, correspondiente a Programación orientada a objetos, semestre `2026-2`.
 
-`Curso` será una clase base abstracta; los objetos concretos se crearán como `CursoRegular`, `CursoTaller` o `CursoTeoricoPractico`.
+`Curso` es una clase base abstracta; los objetos concretos se crean como `CursoRegular`, `CursoTaller` o `CursoTeoricoPractico`.
 
-**Clases de apoyo previstas:**
+**Entidades de apoyo:**
 
 - `Asignatura`: identifica la materia del plan de estudios; no debe confundirse con su sección ofertada.
 - `Matricula`: relaciona un estudiante con un curso y mantiene sus evaluaciones en ese curso.
 - `Evaluacion`: representa una calificación y su categoría.
-- `Semestre` y `ProgramaAcademico`: permiten organizar las consultas y los reportes consolidados.
+- Semestre y programa académico se representan como textos para organizar los reportes de esta demostración.
 - `ServicioReportes`: reúne información del dominio para construir reportes sin mezclar esa tarea con la interfaz web.
 
-La operación del profesor para registrar una nota debe delegar en el curso correspondiente. La validación no debe duplicarse en ambas clases.
+La operación del profesor para registrar una nota delega en el curso correspondiente, sin duplicar la validación en ambas clases.
+
+```mermaid
+classDiagram
+    Estudiante "1" -- "0..*" Matricula : participa
+    Curso "1" -- "0..*" Matricula : contiene
+    Matricula "1" -- "0..*" Evaluacion : registra
+    Profesor "1" -- "0..*" Curso : asignado
+    Asignatura "1" -- "0..*" Curso : se ofrece en
+    Curso <|-- CursoRegular
+    Curso <|-- CursoTaller
+    Curso <|-- CursoTeoricoPractico
+```
 
 ### Pregunta 2 — Encapsulamiento
 
@@ -73,26 +90,25 @@ La operación del profesor para registrar una nota debe delegar en el curso corr
 
 - **`matriculas`:** evita agregar estudiantes directamente, duplicar inscripciones o superar el límite de 40 estudiantes.
 - **Evaluaciones almacenadas en cada matrícula:** evita modificar notas sin validar su valor, categoría, estudiante y profesor responsable. La protección debe mantenerse también dentro de `Matricula`.
-- **`profesor`:** evita cambiar al responsable de un curso sin pasar por una operación autorizada.
+- **`profesor`:** evita cambiar al responsable después de crear el curso mediante acceso directo al atributo.
 - **`asignatura`, `semestre`, `horario` y `aula`:** evita modificaciones arbitrarias que dejen al curso en un estado inconsistente.
 
 El máximo de **40 estudiantes** debe representarse como una constante de la regla de negocio, no como un valor modificable libremente desde la web.
 
-#### Interfaz pública propuesta
+#### Interfaz pública
 
 | Método | Responsabilidad |
 | --- | --- |
-| `matricularEstudiante()` | Comprobar que el estudiante no esté matriculado y que haya cupo antes de inscribirlo. |
-| `asignarProfesor()` | Cambiar el profesor mediante el flujo administrativo autorizado. |
-| `registrarNota()` | Validar la matrícula, la categoría, el rango de la nota y la autorización del profesor antes de registrar o actualizar la evaluación. |
-| `consultarNotas()` | Entregar una consulta de solo lectura, respetando los permisos del usuario. |
+| `matricular()` | Comprobar que el estudiante no esté matriculado y que haya cupo antes de inscribirlo. |
+| `registrarNota()` | Validar la matrícula, la categoría, el rango de la nota y la asignación del profesor antes de registrar la evaluación. |
+| `consultarNotas()` | Entregar las evaluaciones de una matrícula sin exponer una colección modificable. |
 | `calcularPromedio()` | Aplicar la regla de evaluación del tipo de curso. |
 
-No se expondrán listas modificables ni un método genérico que permita sobrescribir todo el estado. La identidad del usuario deberá obtenerse de la sesión autenticada, no confiarse a un identificador enviado libremente por el navegador.
+No se exponen listas modificables ni un método genérico que permita sobrescribir todo el estado. La selección de profesor en esta demostración es **simulada**: comprueba que el identificador corresponda al curso, pero no autentica a la persona. Para datos reales harían falta sesiones autenticadas y autorización en el servidor.
 
 #### Beneficio de ocultar la implementación
 
-La interfaz web podrá solicitar una matrícula sin conocer cómo se almacenan internamente los estudiantes. Si posteriormente cambia la estructura de datos o la persistencia, el contrato público puede mantenerse.
+La interfaz web puede solicitar una matrícula sin conocer cómo se almacenan internamente los estudiantes. Si posteriormente cambia la estructura de datos o la persistencia, el contrato público puede mantenerse.
 
 Además, todas las entradas al sistema deberán respetar las mismas reglas. Por ejemplo, no será posible eludir el límite de cupos modificando directamente la colección de matrículas.
 
@@ -100,13 +116,13 @@ Además, todas las entradas al sistema deberán respetar las mismas reglas. Por 
 
 #### Clase principal: `Curso`
 
-La clase base concentrará:
+La clase base concentra:
 
 - **Atributos comunes:** identificador, asignatura, profesor, horario, aula, semestre y matrículas.
 - **Comportamientos comunes:** matricular estudiantes, controlar cupos, consultar matrículas y validar el registro de notas.
 - **Contrato de evaluación:** `calcularPromedio()`, cuya implementación dependerá del tipo de curso.
 
-En C++, el cálculo se declarará como un método **virtual puro**, las clases hijas lo implementarán con `override` y la clase base tendrá un **destructor virtual**.
+En C++, el cálculo es un método **virtual puro**, las clases hijas lo implementan con `override` y la clase base tiene un **destructor virtual**.
 
 #### Clases hijas
 
@@ -114,9 +130,9 @@ En C++, el cálculo se declarará como un método **virtual puro**, las clases h
 | --- | --- |
 | `CursoRegular` | Calcula el promedio con 20 % de parciales, 30 % de prácticas y 50 % de examen final. |
 | `CursoTaller` | Calcula el promedio exclusivamente a partir de las prácticas; no exige parciales ni examen final. |
-| `CursoTeoricoPractico` | Debe aplicar una regla que combine teoría y práctica. El enunciado no define una ponderación diferenciada: debe confirmarse antes de implementar su cálculo. |
+| `CursoTeoricoPractico` | En esta demostración usa la misma regla general: 20 % de parciales, 30 % de prácticas y 50 % de examen final. |
 
-No se inventará una distribución para `CursoTeoricoPractico`. Si se confirma que utiliza la misma regla que un curso regular, convendrá reutilizar ese cálculo y evitar lógica duplicada. La especialización solo debe añadir reglas que realmente existan.
+El enunciado no define una ponderación diferenciada para `CursoTeoricoPractico`; se acordó aplicar la regla general. Ambas clases reutilizan el mismo cálculo ponderado sin duplicar la fórmula.
 
 #### Ejemplo concreto de polimorfismo
 
@@ -124,7 +140,7 @@ Un generador de reportes recorre cursos mediante referencias a la clase base `Cu
 
 - Si el objeto es un `CursoRegular`, se ejecuta el cálculo ponderado.
 - Si el objeto es un `CursoTaller`, se ejecuta el cálculo basado únicamente en prácticas.
-- Si el objeto es un `CursoTeoricoPractico`, se ejecutará su regla una vez definida.
+- Si el objeto es un `CursoTeoricoPractico`, se ejecuta la regla general acordada.
 
 El generador no necesita preguntar por el tipo de curso con una cadena de condiciones. La llamada es la misma, pero el comportamiento depende del objeto concreto.
 
@@ -142,7 +158,7 @@ El generador no necesita preguntar por el tipo de curso con una cadena de condic
 Un enfoque estructurado también puede resolver este problema y resultar rápido para un prototipo pequeño. La defensa del EOO no consiste en afirmar que las funciones sean incapaces de hacerlo, sino en justificar cómo se organizará un sistema con entidades relacionadas y reglas variables.
 
 1. **Protección de reglas y consistencia de los datos.**  
-   El curso controla sus matrículas y el acceso a las notas. Esto reduce el riesgo de que distintos formularios apliquen reglas diferentes, permitan un estudiante número 41 o acepten cambios de notas no autorizados.
+   El curso controla sus matrículas y la asignación del profesor. Esto reduce el riesgo de que distintos formularios apliquen reglas diferentes o permitan un estudiante número 41. En un sistema real, la autorización también requiere autenticación.
 
 2. **Reutilización y extensión de comportamientos.**  
    Los cursos regulares y los talleres comparten la gestión de profesor, horario, aula y estudiantes. Solo especializan lo que cambia: la evaluación. Un nuevo tipo de curso puede incorporarse sin reescribir el proceso de generación de reportes.
@@ -152,7 +168,7 @@ Un enfoque estructurado también puede resolver este problema y resultar rápido
 
 **Conclusión:** el EOO se elige por su adecuación al dominio y a la evolución de sus reglas, no por una supuesta superioridad en velocidad de ejecución. Estos beneficios requieren un diseño disciplinado; usar clases por sí solo no los garantiza.
 
-## 4. Reglas confirmadas y decisiones pendientes
+## 4. Reglas del caso y decisiones de la demostración
 
 ### Reglas explícitas del caso
 
@@ -163,26 +179,27 @@ Un enfoque estructurado también puede resolver este problema y resultar rápido
 - Los talleres se evalúan **100 % mediante prácticas**.
 - El umbral de riesgo es **promedio < 11**; un promedio exactamente igual a 11 no está por debajo del umbral.
 
-### Propuestas que deben validarse antes de programar
+### Decisiones para esta implementación
 
-| Tema | Propuesta o aclaración pendiente |
+| Tema | Decisión |
 | --- | --- |
-| Escala de notas | Usar de 0 a 20, con decimales. El enunciado fija el umbral de 11, pero no declara expresamente el rango. |
-| Varias notas por categoría | Usar la media aritmética dentro de cada categoría y después aplicar su ponderación. Confirmar si cada actividad tiene un peso propio. |
-| Evaluaciones pendientes | Mostrar el promedio final como pendiente hasta completar las evaluaciones requeridas. No convertir automáticamente una nota ausente en cero. |
-| Cursos teórico-prácticos | Confirmar la distribución entre teoría y práctica y cómo se relaciona con la ponderación general. |
-| Alcance de las alertas | Proponer una alerta por promedio final de cada curso; confirmar si también se exige promedio global, semestral o provisional. |
-| Canal de alertas | Para la demostración, mostrar avisos automáticos en la web al recalcular notas. Correo y notificaciones externas no forman parte de esta propuesta inicial. |
-| Redondeo | Comparar el promedio sin redondear contra 11 y redondear solo su presentación. Confirmar la norma académica. |
-| Reportes consolidados | Confirmar cómo agregar resultados de varios cursos: promedio simple o ponderado por créditos, y tratamiento de cursos pendientes. |
+| Escala de notas | De 0 a 20. El enunciado fija el umbral de 11, pero no declara expresamente el rango. |
+| Varias notas por categoría | Se calcula la media aritmética dentro de cada categoría y después se aplica su ponderación. |
+| Precisión y límite técnico | Se admiten hasta seis decimales y 100 evaluaciones por categoría y matrícula; estos límites no están en el enunciado. |
+| Evaluaciones pendientes | El promedio final permanece pendiente hasta completar las categorías requeridas; una nota ausente no se convierte en cero. |
+| Cursos teórico-prácticos | Se aplica la ponderación general de 20 %, 30 % y 50 %. |
+| Alertas | Se muestra una alerta en la web por cada promedio final de curso menor que 11. No se envían correos. |
+| Redondeo | Se compara el promedio sin redondear contra 11; la presentación se redondea para facilitar la lectura. |
+| Reportes consolidados | Se usa la media simple de los promedios finales disponibles y se excluyen los pendientes. |
+| Almacenamiento y acceso | Los datos son ficticios, se mantienen en memoria y los roles son simulados. |
 
-Estas propuestas no deben presentarse como requisitos dados por el profesor.
+Estas decisiones no deben presentarse como requisitos adicionales dados por el profesor.
 
-## 5. Propuesta técnica: C++ y despliegue en Render
+## 5. Solución técnica: C++ y Render
 
-### Arquitectura propuesta
+### Arquitectura
 
-El proyecto tendrá una interfaz web sencilla y una API en C++ con Crow. La aplicación se empaquetará con Docker y se alojará como servicio web en Render.
+La aplicación tiene una interfaz web sencilla y una API en C++ con Crow. Se incluye un `Dockerfile` para alojarla como servicio web en Render.
 
 ```text
 Navegador (HTML, CSS y JavaScript)
@@ -202,13 +219,43 @@ Navegador (HTML, CSS y JavaScript)
 
 ### Componentes
 
-- **C++17 y CMake:** propuesta para implementar y compilar el modelo y el servicio.
-- **Crow:** capa HTTP; las rutas delegarán en el modelo, sin duplicar las fórmulas.
+- **C++17 y CMake:** implementan y compilan el modelo y el servicio.
+- **Crow:** capa HTTP; las rutas delegan en el modelo, sin duplicar las fórmulas.
 - **HTML, CSS y JavaScript:** interfaz pequeña, servida desde el mismo servicio y sin un framework de frontend inicialmente.
-- **Docker:** empaquetará la aplicación y sus dependencias para compilarla y ejecutarla en Render.
-- **Render:** alojará la aplicación como servicio web conectado al repositorio de GitHub.
-- **Datos ficticios en memoria:** primera demostración, indicando expresamente que se reinician al cerrar o reiniciar el servicio.
+- **Docker:** empaqueta la aplicación y sus dependencias para compilarla y ejecutarla en Render.
+- **Render:** plataforma prevista para alojar el servicio web.
+- **Datos ficticios en memoria:** se restablecen al cerrar o reiniciar el servicio.
 - **Persistencia posterior:** evaluar SQLite con almacenamiento persistente, o una base de datos externa. No considerar el sistema de archivos del contenedor como garantía de conservación de datos.
+
+### Estructura del proyecto
+
+- [`src/modelo.hpp`](src/modelo.hpp) y [`src/modelo.cpp`](src/modelo.cpp): clases, cálculos y reportes.
+- [`src/servidor.cpp`](src/servidor.cpp): servidor HTTP y API.
+- [`web/`](web/): interfaz en HTML, CSS y JavaScript.
+- [`tests/`](tests/): pruebas del modelo y de la API.
+- [`CMakeLists.txt`](CMakeLists.txt) y [`Dockerfile`](Dockerfile): compilación y empaquetado.
+
+### Ejecutar localmente en Windows
+
+Se necesitan Git, CMake 3.22 o posterior y Visual Studio 2022 con las herramientas de C++. En la primera configuración, CMake descarga Crow y Asio. Node.js 18 o posterior permite ejecutar también las pruebas de la API.
+
+Desde PowerShell, situado en la carpeta del proyecto:
+
+```powershell
+cmake -S . -B build\vs -G "Visual Studio 17 2022" -A x64
+cmake --build build\vs --config Release
+ctest --test-dir build\vs -C Release --output-on-failure
+.\build\vs\Release\innova.exe
+```
+
+Abrir [http://localhost:8080](http://localhost:8080). Para detener el servidor, usar `Ctrl+C`. Si Node.js no está disponible, CMake informa que las pruebas de API se omiten; las pruebas del modelo siguen disponibles.
+
+Con Docker instalado, también se puede ejecutar:
+
+```powershell
+docker build -t instituto-innova .
+docker run --rm -p 8080:10000 instituto-innova
+```
 
 ### Despliegue previsto en Render
 
@@ -217,20 +264,20 @@ Navegador (HTML, CSS y JavaScript)
 3. Configurar el servidor para escuchar en `0.0.0.0`, en el puerto indicado por la variable de entorno `PORT`.
 4. Verificar la interfaz y la API desplegadas y documentar la URL del servicio.
 
-El despliegue todavía no está implementado; estos pasos se realizarán cuando la aplicación esté lista.
+El servicio gratuito puede detenerse después de 15 minutos sin actividad y tardar aproximadamente un minuto en iniciar de nuevo. Los cambios en memoria se pierden al detenerse, reiniciarse o desplegarse; los datos de ejemplo se cargan de nuevo al iniciar.
 
-## 6. Alcance propuesto de la demostración
+## 6. Cómo probar la demostración
 
-1. Registrar estudiantes, profesores, asignaturas y secciones de cursos.
-2. Matricular estudiantes y demostrar el control de cupos.
-3. Registrar evaluaciones y calcular promedios según el tipo de curso.
-4. Consultar notas desde una vista de estudiante.
-5. Mostrar alertas de riesgo académico.
-6. Consultar reportes por estudiante, curso y semestre, con consolidación por programa académico.
+1. En **Resumen**, revisar los datos de ejemplo y la alerta de Luis Mendoza.
+2. En **Administración**, registrar un estudiante, un profesor o una asignatura ficticios.
+3. En **Cursos y matrículas**, crear una sección y matricular estudiantes.
+4. En **Registrar notas**, elegir al profesor asignado, el curso y el estudiante; añadir evaluaciones. Se acepta coma o punto como separador decimal.
+5. En **Consulta del estudiante**, seleccionar una persona y revisar sus notas y promedio.
+6. En **Reportes**, filtrar por semestre y programa para consultar los resultados consolidados.
 
-Las vistas de estudiante, profesor y administrador tendrán responsabilidades distintas. Si inicialmente se permite cambiar de rol para la exposición, se identificará como **simulación**, no como autenticación real. Un despliegue con información académica real requerirá autenticación y autorización verificadas en el servidor.
+Las vistas de estudiante, profesor y administrador son **simuladas** y públicas. No hay cuentas ni autenticación: cualquier visitante puede seleccionar un profesor o consultar los datos ficticios. Un sistema con información real requeriría autenticación, autorización y almacenamiento persistente.
 
-### Casos de verificación previstos
+### Casos de verificación
 
 | Caso | Resultado esperado |
 | --- | --- |
@@ -240,25 +287,25 @@ Las vistas de estudiante, profesor y administrador tendrán responsabilidades di
 | Matricular al mismo estudiante en otra sección de otra asignatura | Operación permitida. |
 | Curso regular con parciales 12, prácticas 14 y final 16 | Promedio 14,6. |
 | Taller con práctica 14 y sin parciales ni examen final | Promedio 14. |
-| Promedio 10,9 frente a promedio 11 | Alerta solo para 10,9, según el alcance de alertas que se confirme. |
+| Promedio 10,9 frente a promedio 11 | Alerta solo para 10,9. |
 | Nota fuera del rango acordado | Rechazo explícito, sin sobrescribir una nota válida. |
-| Falta una evaluación requerida | Resultado pendiente, según la política que se confirme. |
-| Profesor que intenta modificar un curso ajeno | Rechazo por falta de autorización. |
-| Reporte de un semestre o programa específico | Incluye únicamente los registros del filtro y aplica la regla de consolidación acordada. |
+| Falta una evaluación requerida | Resultado pendiente. |
+| Profesor seleccionado que intenta registrar notas en un curso ajeno | Rechazo al no coincidir con el profesor asignado; esto no constituye autenticación. |
+| Reporte de un semestre o programa específico | Incluye únicamente los registros del filtro y aplica la media acordada. |
 
-Estos casos son criterios de aceptación previstos; todavía no existen pruebas automatizadas ni resultados de ejecución.
+Las pruebas automatizadas del modelo y la API cubren estos comportamientos, incluidos registros concurrentes para el límite de cupos.
 
-## 7. Orden de trabajo sugerido
+## 7. Estado y próximos pasos
 
-1. Validar las reglas pendientes y el alcance de la exposición.
-2. Diseñar las clases y sus relaciones mediante un diagrama UML.
-3. Implementar y probar el modelo en C++, inicialmente sin interfaz web.
-4. Incorporar la API y una interfaz sencilla.
-5. Verificar reportes, permisos, alertas y comportamiento de los datos al reiniciar.
-6. Preparar Docker, desplegar en Render y documentar los comandos reales de ejecución.
+- [x] Modelar las clases, las relaciones y las reglas académicas en C++.
+- [x] Incorporar la API, la interfaz y las pruebas automatizadas.
+- [x] Preparar la imagen Docker.
+- [ ] Desplegar y verificar el servicio público de Render.
+- [ ] Para un sistema real: incorporar autenticación y persistencia duradera.
 
 ## 8. Referencias técnicas
 
 - [Crow: framework web para C++](https://crowcpp.org/master/).
 - [Render: despliegues mediante Docker](https://render.com/docs/docker).
 - [Render: configuración de servicios web](https://render.com/docs/web-services).
+- [Render: limitaciones del plan gratuito](https://render.com/docs/free).
