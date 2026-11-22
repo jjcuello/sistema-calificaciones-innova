@@ -178,45 +178,46 @@ Un enfoque estructurado también puede resolver este problema y resultar rápido
 
 Estas propuestas no deben presentarse como requisitos dados por el profesor.
 
-## 5. Propuesta técnica: C++ y una web sencilla
+## 5. Propuesta técnica: C++ y despliegue en Render
 
-### Render y FastAPI cumplen funciones distintas
+### Arquitectura propuesta
 
-- **Render** es una plataforma de alojamiento donde se puede desplegar el servicio.
-- **FastAPI** es un framework de Python para construir APIs; no sustituye al alojamiento.
-- **Crow** es un framework de C++ para crear servicios HTTP y puede exponer el modelo del proyecto directamente a una interfaz web.
-
-### Opción recomendada: C++ + Crow + HTML/CSS/JavaScript
+El proyecto tendrá una interfaz web sencilla y una API en C++ con Crow. La aplicación se empaquetará con Docker y se alojará como servicio web en Render.
 
 ```text
-Navegador: HTML, CSS y JavaScript
+Navegador (HTML, CSS y JavaScript)
                  |
-              HTTP/JSON
+             HTTP / JSON
                  |
-         API en C++ con Crow
-                 |
-       Modelo orientado a objetos
-                 |
-       Repositorio de datos
++--------------------------------------+
+| Render: servicio web con Docker      |
+|                                      |
+|   API en C++ con Crow                |
+|              |                       |
+|   Modelo orientado a objetos         |
+|              |                       |
+|   Repositorio de datos               |
++--------------------------------------+
 ```
 
-**Despliegue propuesto:** empaquetar el servicio y la interfaz en Docker y alojarlos en Render.
+### Componentes
 
-Esta opción mantiene las clases, las reglas académicas y el servidor en C++, evitando un segundo lenguaje en el backend. La interfaz puede servirse desde el mismo servicio para simplificar la demostración.
-
-- **C++17 y CMake:** propuesta para implementar y compilar el proyecto.
+- **C++17 y CMake:** propuesta para implementar y compilar el modelo y el servicio.
 - **Crow:** capa HTTP; las rutas delegarán en el modelo, sin duplicar las fórmulas.
-- **HTML, CSS y JavaScript:** interfaz pequeña, sin un framework de frontend inicialmente.
+- **HTML, CSS y JavaScript:** interfaz pequeña, servida desde el mismo servicio y sin un framework de frontend inicialmente.
+- **Docker:** empaquetará la aplicación y sus dependencias para compilarla y ejecutarla en Render.
+- **Render:** alojará la aplicación como servicio web conectado al repositorio de GitHub.
 - **Datos ficticios en memoria:** primera demostración, indicando expresamente que se reinician al cerrar o reiniciar el servicio.
 - **Persistencia posterior:** evaluar SQLite con almacenamiento persistente, o una base de datos externa. No considerar el sistema de archivos del contenedor como garantía de conservación de datos.
 
-### Alternativa: C++ + FastAPI + web
+### Despliegue previsto en Render
 
-Es posible mantener el dominio en C++ y utilizar FastAPI como capa HTTP en Python. Para una demostración pequeña, esa capa podría invocar un ejecutable C++ mediante un contrato JSON de entrada y salida.
+1. Preparar un `Dockerfile` para compilar y ejecutar la aplicación.
+2. Crear un servicio web en Render, conectar el repositorio de GitHub y seleccionar Docker como entorno.
+3. Configurar el servidor para escuchar en `0.0.0.0`, en el puerto indicado por la variable de entorno `PORT`.
+4. Verificar la interfaz y la API desplegadas y documentar la URL del servicio.
 
-Sin embargo, esta alternativa añade integración entre procesos, compilación del ejecutable, manejo de errores y una decisión explícita sobre dónde persisten los datos entre peticiones. Las ponderaciones y reglas deben seguir en C++, no reimplementarse en Python.
-
-**Recomendación:** empezar con C++ y Crow para que el trabajo evidencie directamente el EOO en el lenguaje elegido. Considerar FastAPI si existe un motivo concreto para introducir Python.
+El despliegue todavía no está implementado; estos pasos se realizarán cuando la aplicación esté lista.
 
 ## 6. Alcance propuesto de la demostración
 
@@ -254,10 +255,10 @@ Estos casos son criterios de aceptación previstos; todavía no existen pruebas 
 3. Implementar y probar el modelo en C++, inicialmente sin interfaz web.
 4. Incorporar la API y una interfaz sencilla.
 5. Verificar reportes, permisos, alertas y comportamiento de los datos al reiniciar.
-6. Preparar Docker, desplegar y documentar los comandos reales de ejecución.
+6. Preparar Docker, desplegar en Render y documentar los comandos reales de ejecución.
 
 ## 8. Referencias técnicas
 
 - [Crow: framework web para C++](https://crowcpp.org/master/).
 - [Render: despliegues mediante Docker](https://render.com/docs/docker).
-- [FastAPI: framework para APIs en Python](https://fastapi.tiangolo.com/).
+- [Render: configuración de servicios web](https://render.com/docs/web-services).
