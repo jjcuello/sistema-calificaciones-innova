@@ -18,6 +18,8 @@
 
 - **Código y repositorio público:** [github.com/jjcuello/sistema-calificaciones-innova](https://github.com/jjcuello/sistema-calificaciones-innova).
 - **Aplicación en Render:** [sistema-calificaciones-innova.onrender.com](https://sistema-calificaciones-innova.onrender.com).
+- **Documento de respuestas:** [preguntas y respuestas en PDF](entregables/Caso_7_Preguntas_y_respuestas.pdf).
+- **Presentación:** [diapositivas editables con notas para la exposición](entregables/Caso_7_Presentacion.pptx).
 
 ## 1. Contexto del caso
 
@@ -233,6 +235,7 @@ Navegador (HTML, CSS y JavaScript)
 - [`src/servidor.cpp`](src/servidor.cpp): servidor HTTP y API.
 - [`web/`](web/): interfaz en HTML, CSS y JavaScript.
 - [`tests/`](tests/): pruebas del modelo y de la API.
+- [`entregables/`](entregables/): documento de respuestas y presentación.
 - [`CMakeLists.txt`](CMakeLists.txt) y [`Dockerfile`](Dockerfile): compilación y empaquetado.
 
 En este proyecto, por ejemplo, `modelo.hpp` declara clases como `Estudiante` y `Curso`, mientras que `modelo.cpp` implementa su comportamiento. El `.hpp` permite compartir esas declaraciones entre los distintos archivos fuente sin duplicarlas.
