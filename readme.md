@@ -17,7 +17,7 @@
 ## Enlaces de entrega
 
 - **Código y repositorio público:** [github.com/jjcuello/sistema-calificaciones-innova](https://github.com/jjcuello/sistema-calificaciones-innova).
-- **Aplicación en Render:** pendiente de despliegue.
+- **Aplicación en Render:** [sistema-calificaciones-innova.onrender.com](https://sistema-calificaciones-innova.onrender.com).
 
 ## 1. Contexto del caso
 
@@ -223,7 +223,7 @@ Navegador (HTML, CSS y JavaScript)
 - **Crow:** capa HTTP; las rutas delegan en el modelo, sin duplicar las fórmulas.
 - **HTML, CSS y JavaScript:** interfaz pequeña, servida desde el mismo servicio y sin un framework de frontend inicialmente.
 - **Docker:** empaqueta la aplicación y sus dependencias para compilarla y ejecutarla en Render.
-- **Render:** plataforma prevista para alojar el servicio web.
+- **Render:** alojamiento del servicio web.
 - **Datos ficticios en memoria:** se restablecen al cerrar o reiniciar el servicio.
 - **Persistencia posterior:** evaluar SQLite con almacenamiento persistente, o una base de datos externa. No considerar el sistema de archivos del contenedor como garantía de conservación de datos.
 
@@ -257,14 +257,17 @@ docker build -t instituto-innova .
 docker run --rm -p 8080:10000 instituto-innova
 ```
 
-### Despliegue previsto en Render
+### Despliegue en Render
 
-1. Preparar un `Dockerfile` para compilar y ejecutar la aplicación.
-2. Crear un servicio web en Render, conectar el repositorio de GitHub y seleccionar Docker como entorno.
-3. Configurar el servidor para escuchar en `0.0.0.0`, en el puerto indicado por la variable de entorno `PORT`.
-4. Verificar la interfaz y la API desplegadas y documentar la URL del servicio.
+El servicio utiliza Docker, escucha en `0.0.0.0` en el puerto indicado por `PORT` y comprueba su disponibilidad mediante `/health`.
 
-El servicio gratuito puede detenerse después de 15 minutos sin actividad y tardar aproximadamente un minuto en iniciar de nuevo. Los cambios en memoria se pierden al detenerse, reiniciarse o desplegarse; los datos de ejemplo se cargan de nuevo al iniciar.
+El repositorio está configurado como **Public Git Repository** con despliegue automático desactivado. Para publicar cambios:
+
+1. Subir los cambios a la rama `main` en GitHub.
+2. Abrir el servicio en el panel de Render y seleccionar **Manual Deploy → Deploy latest commit**.
+3. Esperar a que el despliegue indique **Live** y verificar la aplicación.
+
+El servicio gratuito puede detenerse después de 15 minutos sin actividad y tardar un minuto o más en responder de nuevo. Los cambios en memoria se pierden al detenerse, reiniciarse o desplegarse; los datos de ejemplo se cargan de nuevo al iniciar.
 
 ## 6. Cómo probar la demostración
 
@@ -300,7 +303,7 @@ Las pruebas automatizadas del modelo y la API cubren estos comportamientos, incl
 - [x] Modelar las clases, las relaciones y las reglas académicas en C++.
 - [x] Incorporar la API, la interfaz y las pruebas automatizadas.
 - [x] Preparar la imagen Docker.
-- [ ] Desplegar y verificar el servicio público de Render.
+- [x] Desplegar y verificar el servicio público de Render.
 - [ ] Para un sistema real: incorporar autenticación y persistencia duradera.
 
 ## 8. Referencias técnicas
