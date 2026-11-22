@@ -229,11 +229,47 @@ Navegador (HTML, CSS y JavaScript)
 
 ### Estructura del proyecto
 
-- [`src/modelo.hpp`](src/modelo.hpp) y [`src/modelo.cpp`](src/modelo.cpp): clases, cálculos y reportes.
+- [`src/modelo.hpp`](src/modelo.hpp) y [`src/modelo.cpp`](src/modelo.cpp): clases, cálculos y reportes. El archivo `.hpp` es un **encabezado de C++**: declara las clases y funciones que otros archivos pueden usar; el `.cpp` contiene sus implementaciones.
 - [`src/servidor.cpp`](src/servidor.cpp): servidor HTTP y API.
 - [`web/`](web/): interfaz en HTML, CSS y JavaScript.
 - [`tests/`](tests/): pruebas del modelo y de la API.
 - [`CMakeLists.txt`](CMakeLists.txt) y [`Dockerfile`](Dockerfile): compilación y empaquetado.
+
+En este proyecto, por ejemplo, `modelo.hpp` declara clases como `Estudiante` y `Curso`, mientras que `modelo.cpp` implementa su comportamiento. El `.hpp` permite compartir esas declaraciones entre los distintos archivos fuente sin duplicarlas.
+
+### Ejecutar localmente en Linux
+
+En Ubuntu 22.04 o posterior, o Debian 12 o posterior, se necesitan Git, un compilador de C++17 y CMake 3.22 o posterior. CMake descarga Crow y Asio durante la primera configuración, por lo que se requiere conexión a Internet. Node.js 18 o posterior es opcional; permite ejecutar también las pruebas de la API.
+
+Instalar las herramientas básicas:
+
+```bash
+sudo apt update
+sudo apt install -y build-essential cmake git
+```
+
+Clonar el repositorio y entrar en su carpeta:
+
+```bash
+git clone https://github.com/jjcuello/sistema-calificaciones-innova.git
+cd sistema-calificaciones-innova
+```
+
+Configurar, compilar y ejecutar las pruebas:
+
+```bash
+cmake -S . -B build/linux -DCMAKE_BUILD_TYPE=Release
+cmake --build build/linux --parallel
+ctest --test-dir build/linux --output-on-failure
+```
+
+Iniciar el servidor desde la carpeta raíz del proyecto:
+
+```bash
+./build/linux/innova
+```
+
+Abrir [http://localhost:8080](http://localhost:8080). Para detener el servidor, usar `Ctrl+C`. Si Node.js 18 o posterior no está instalado, se omiten las pruebas de la API; las pruebas del modelo siguen disponibles. Para instalar Node.js, seguir las [instrucciones oficiales](https://nodejs.org/en/download) y comprobar la versión con `node --version`.
 
 ### Ejecutar localmente en Windows
 
